@@ -1,4 +1,4 @@
-name: Mirror Upstream (Force Except Workflows + Functions + Index)
+name: Mirror Upstream (Force Except Workflows)
 
 on:
   schedule:
@@ -24,56 +24,32 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Save local files
+      - name: Save local workflows
         run: |
-          mkdir -p /tmp/backup
-
-          # backup workflows
+          mkdir -p /tmp/workflows
           if [ -d ".github/workflows" ]; then
-            cp -r .github/workflows /tmp/backup/
-          fi
-
-          # backup functions
-          if [ -d "functions" ]; then
-            cp -r functions /tmp/backup/
-          fi
-
-          # backup index.html
-          if [ -f "index.html" ]; then
-            cp index.html /tmp/backup/
+            cp -r .github/workflows /tmp/workflows/
           fi
 
       - name: Add upstream
         run: |
-          git remote add upstream https://github.com/raisfz/raisfz.github.io.git
+          git remote add upstream https://github.com/tutupgelas928/75.git
           git fetch upstream
 
       - name: Hard reset to upstream
         run: |
-          git reset --hard upstream/master
+          git reset --hard upstream/main
 
-      - name: Restore local files
+      - name: Restore workflows
         run: |
-          # restore workflows
           rm -rf .github/workflows
-          if [ -d "/tmp/backup/workflows" ]; then
+          if [ -d "/tmp/workflows/workflows" ]; then
             mkdir -p .github
-            cp -r /tmp/backup/workflows .github/
-          fi
-
-          # restore functions
-          rm -rf functions
-          if [ -d "/tmp/backup/functions" ]; then
-            cp -r /tmp/backup/functions .
-          fi
-
-          # restore index.html
-          if [ -f "/tmp/backup/index.html" ]; then
-            cp /tmp/backup/index.html .
+            cp -r /tmp/workflows/workflows .github/
           fi
 
       - name: Force push to fork
         run: |
           git add .
-          git commit -m "Force sync except workflows + functions + index" || echo "No changes"
+          git commit -m "Force sync except workflows" || echo "No changes"
           git push origin main --force
